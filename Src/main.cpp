@@ -1,32 +1,20 @@
 
-#include "stm32f767.h"
+#include "gpio.hpp"
+
+using led = gpio<gpio_port::port_b, gpio_pin::pin_7>;
 
 int main(void)
 {
-    // Enable GPIOB Clock
-    reg_access<uint32_t, uint32_t, mcal::rcc::rcc_ahb1enr, UINT32_C(1)>::bit_set();
-
-    // Enable GPIOB.P0 to output
-    reg_access<uint32_t, uint32_t, mcal::gpio_b::gpio_b_moder, UINT32_C(0)>::bit_set();
-
-    // Push-Pull
-    reg_access<uint32_t, uint32_t, mcal::gpio_b::gpio_b_otyper, UINT32_C(0)>::bit_clr();
-
-    // No Pull (bits [1:0] = 00 for PB0)
-    reg_access<uint32_t, uint32_t, mcal::gpio_b::gpio_b_pupdr, UINT32_C(0)>::bit_clr();
-    reg_access<uint32_t, uint32_t, mcal::gpio_b::gpio_b_pupdr, UINT32_C(1)>::bit_clr();
-
+    led::init();
 
     while (1)
     {
-        // LED ON
-        reg_access<uint32_t, uint32_t, mcal::gpio_b::gpio_b_bsrr, UINT32_C(0)>::bit_set();
+        led::set_pin_high();
 
-        for(int i=0; i<200000;i++){}
+        for(int i = 0; i < 200000; i++) {}
 
-        // LED OFF
-        reg_access<uint32_t, uint32_t, mcal::gpio_b::gpio_b_bsrr, UINT32_C(16)>::bit_set();
+        led::set_pin_low();
 
-        for(int i=0; i<200000;i++){}
+        for(int i = 0; i < 200000; i++) {}
     }
 }
