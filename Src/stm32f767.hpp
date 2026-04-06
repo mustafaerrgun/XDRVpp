@@ -1,4 +1,4 @@
-/* General struct template for register manipulation*/
+/* General template functions for register manipulation*/
 
 #include <cstdint>
 
