@@ -148,7 +148,7 @@ extern "C"
     void MDIOS_IRQHandler(void)          __attribute__((weak, alias("Default_Handler")));
 }
 
-uint32_t vectors[] __attribute__((section(".isr_vector"))) =
+const uint32_t vectors[] __attribute__((section(".isr_vector"))) =
 {
     STACK_START,
     (uint32_t)Reset_Handler,
