@@ -2,7 +2,6 @@
 
 #pragma once
 
-
 #include "stm32f767.hpp"
 #include "gpio.hpp"
 
@@ -125,6 +124,42 @@ class uart
 
         }
 
+        // uint32_t to ASCII
+        static void conversion(uint32_t data)
+        {
+            char buf[11] = {};
+            uint32_t i = 10U;
+
+            if (data == 0U)
+            {
+                buf[--i] = '0';
+            }
+            else
+            {
+                while (data > 0U)
+                {
+                    buf[--i] = static_cast<char>('0' + (data % 10U));
+                    data /= 10U;
+                }
+            }
+
+            send(&buf[i]);
+        }
+
+        // ASCII to uint32_t
+        static uint32_t conversion(const uint8_t* data, uint32_t len)
+        {
+            uint32_t rx_data = 0U;
+
+            for(uint32_t i=0U; i < len; i++)
+            {
+                if(data[i] == '\0') break;
+                if(data[i] < '0' || data[i] > '9') break;
+                rx_data = rx_data * 10U + static_cast<uint32_t>(data[i] - '0');
+            }
+            return rx_data;
+        }
+
         static void send_byte(uint8_t data)
         {
             // Wait for TXE (bit 7)
@@ -133,6 +168,15 @@ class uart
             // Write byte to TDR
             reg_access<tdr_addr>::reg_write(static_cast<uint32_t>(data));
         }
+
+        static uint8_t receive_byte()
+        {
+            // Wait for RXE (bit 5)
+            while(!(reg_access<isr_addr>::reg_read() & (1U << 5U))) {}
+
+            return static_cast<uint8_t>(reg_access<rdr_addr>::reg_read());
+        }
+
 
     public:
         static void init()
@@ -155,13 +199,63 @@ class uart
             reg_access<cr1_addr, 0U>::bit_set();
         }
 
+        // Send char array
         static void send(const char* data)
         {
             for(uint32_t i=0U; data[i] != '\0'; i++)
-            {
                 send_byte(static_cast<uint8_t>(data[i]));
-            }
+
+            send_byte('\r');
+            send_byte('\n');
         }
 
+        // Send single char value
+        static void send(const char data)
+        {
+            send_byte(static_cast<uint8_t>(data));
+            send_byte('\r');
+            send_byte('\n');
+        }
+
+        // Send uint32_t value
+        static void send(const uint32_t data)
+        {
+            conversion(data);
+        }
+
+        // Receive uint32_t value
+        static void receive(uint32_t& data)
+        {
+            uint8_t byte_buf[11] = {};
+
+            for (uint32_t i = 0U; i < 10U; i++)
+            {
+                byte_buf[i] = receive_byte();
+
+                if(byte_buf[i] == '\n' || byte_buf[i] == '\r')
+                {   
+                    byte_buf[i] = '\0'; 
+                    break;
+                }
+            }
+            data = conversion(byte_buf, 11U);
+        }
+
+        // Receive char array
+        template<uint32_t N>
+        static void receive(char (&data)[N])
+        {
+            for (uint32_t i = 0U; i < N - 1U; i++)
+            {
+                data[i] = static_cast<char>(receive_byte());
+
+                if(data[i] == '\n' || data[i] == '\r')
+                {
+                    data[i] = '\0';
+                    return;
+                }
+            }
+            data[N - 1U] = '\0';
+        }
 
 };
