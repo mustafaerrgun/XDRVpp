@@ -41,6 +41,21 @@ struct uart_clk
     uint32_t clk_en_bit;
 };
 
+constexpr uint32_t uart_irq_num(uart_inst inst)
+{
+    switch (inst)
+    {
+        case uart_inst::uart_1: return 37U;
+        case uart_inst::uart_2: return 38U;
+        case uart_inst::uart_3: return 39U;
+        case uart_inst::uart_4: return 52U;
+        case uart_inst::uart_5: return 53U;
+        case uart_inst::uart_6: return 71U;
+        case uart_inst::uart_7: return 82U;
+        default:                return 37U;
+    }
+}
+
 constexpr uart_clk uart_clk_config(uart_inst inst)
 {
     switch (inst)
@@ -171,7 +186,7 @@ class uart
 
         static uint8_t receive_byte()
         {
-            // Wait for RXE (bit 5)
+            // Wait for RXNE (bit 5)
             while(!(reg_access<isr_addr>::reg_read() & (1U << 5U))) {}
 
             return static_cast<uint8_t>(reg_access<rdr_addr>::reg_read());
@@ -194,6 +209,14 @@ class uart
 
             // Calculate BRR register value for specified baudrate
             brr_calc();
+
+            if constexpr(UartInterrupt)
+            {
+                // RXNE interrupt enable
+                reg_access<cr1_addr, 5U>::bit_set();
+                // Enable IRQ line in NVIC for the selected UART instance
+                mcal::nvic::enable_irq(uart_irq_num(Instance));
+            }
 
             // Enable UART Module
             reg_access<cr1_addr, 0U>::bit_set();
@@ -258,4 +281,13 @@ class uart
             data[N - 1U] = '\0';
         }
 
+        // IRQ Handler
+        template<typename T>
+        static void irq_handler(T& data)
+        {
+            if(reg_access<cr1_addr>::reg_read() & (1U << 5U))
+            {
+                receive(data);
+            }
+        }
 };
