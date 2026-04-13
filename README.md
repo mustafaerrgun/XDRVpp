@@ -1,8 +1,8 @@
-# XDRpp — Low-Level GPIO & UART Drivers in Modern C++
+# XDRVpp — eXperimental Drivers in Modern C++
 
-Bare-metal firmware drivers for the **STM32F767ZI** (Cortex-M7) written in modern C++ using templates, `constexpr`, and zero-cost abstractions. 
+Bare-metal firmware drivers (GPIO, UART) for the **STM32F767ZI** written in modern C++.
 
-## Overview
+## 1. Overview
 
 This project implements two low-level peripheral drivers from scratch:
 
@@ -17,7 +17,7 @@ Key design goals:
 - **No external dependencies** — direct register access, no CMSIS or STM32 HAL
 - **Header-only** — easy to integrate, no separate compilation units needed
 
-## Project Structure
+## 2. Project Structure
 
 ```
 XDRpp/
@@ -41,7 +41,7 @@ XDRpp/
 ```
 
 
-## Hardware Target
+## 3. Hardware Target
 
 | Parameter | Value |
 |-----------|-------|
@@ -53,9 +53,9 @@ XDRpp/
 | Board | NUCLEO-F767ZI |
 
 
-## Architecture
+## 4. Architecture
 
- is no dynamic dispatch, no virtual functions, and no heap allocation in driver code. Register addresses and bit masks are computed by the compiler as `constexpr` values.
+There is no dynamic dispatch, no virtual functions, and no heap allocation in driver code. Register addresses and bit masks are computed by the compiler as `constexpr` values.
 
 The register abstraction template ([Src/stm32f767.hpp](Src/stm32f767.hpp)) provides atomic read/write/OR/AND/toggle operations:
 
@@ -72,7 +72,7 @@ struct reg_access {
 };
 ```
 
-## GPIO Driver
+## 5. GPIO Driver
 
 **File:** [Src/gpio.hpp](Src/gpio.hpp)
 
@@ -110,7 +110,7 @@ delay(1000);
 led::set_pin_low();
 ```
 
-## UART Driver
+## 6. UART Driver
 
 **File:** [Src/uart.hpp](Src/uart.hpp)
 
@@ -202,7 +202,7 @@ extern "C" void USART3_IRQHandler() {
 }
 ```
 
-## Startup & Linker Script
+## 7. Startup & Linker Script
 
 ### Startup ([Src/startup_stm32f767.cpp](Src/startup_stm32f767.cpp))
 
@@ -219,7 +219,7 @@ RAM:   0x20000000  512 KB (rwx)
 
 Sections: `.isr_vector` → `.text` → `.data` (loaded from Flash, copied to RAM) → `.bss` (zeroed at startup)
 
-## Test Files
+## 8. Test Files
 
 Located in [Src/tests/](Src/tests/), each file defines a `run_test()` function included by [Src/main.cpp](Src/main.cpp):
 
@@ -231,7 +231,7 @@ Located in [Src/tests/](Src/tests/), each file defines a `run_test()` function i
 | [test_uart3.hpp](Src/tests/test_uart3.hpp) | Receive 10 `uint32_t` values sequentially |
 | [test_uart4.hpp](Src/tests/test_uart4.hpp) | Interrupt-driven reception, verify received value equals 10 |
 
-## Building
+## 9. Building
 
 The project targets **STM32CubeIDE** (Eclipse-based). Open the project folder in STM32CubeIDE, select the build configuration, and compile. The custom linker script `STM32F767ZITX_CUSTOM.ld` and startup file `startup_stm32f767.cpp` replace the auto-generated ones.
 
