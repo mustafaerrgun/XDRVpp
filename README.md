@@ -123,6 +123,7 @@ template<
     const bool UartInterrupt = false  // Enable RXNE interrupt
 >
 struct uart { ... };
+```
 
 ### UART Instances
 
