@@ -89,8 +89,7 @@ constexpr uart_pins uart_gpio_config(uart_inst inst)
 
 template<uart_inst  Instance      = uart_inst::uart_3,
          uart_baud  BaudRate      = uart_baud::baud_96k,
-         bool       UartInterrupt = false,
-         bool       UartDMA       = false>
+         bool       UartInterrupt = false>
 class uart
 {
     private:
