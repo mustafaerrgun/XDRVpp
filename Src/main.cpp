@@ -1,5 +1,5 @@
 
-#include "tests/test_gpio.hpp"
+#include "../Tests/test_gpio.hpp"
 
 int main(void)
 {

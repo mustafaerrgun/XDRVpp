@@ -23,18 +23,19 @@ Key design goals:
 XDRpp/
 ├── Src/
 │   ├── main.cpp                  # Entry point
-│   ├── gpio.hpp                  # GPIO driver
-│   ├── uart.hpp                  # UART driver
-│   ├── stm32f767.hpp             # MCU peripheral definitions & register abstraction
-│   ├── startup_stm32f767.cpp     # Startup code & interrupt vector table (149 vectors)
+│   ├── startup_stm32f767.cpp     # Startup code & interrupt vector table
 │   ├── syscalls.c                # Newlib system call stubs
 │   ├── sysmem.c                  # Heap management (_sbrk)
-│   └── tests/
-│       ├── test_gpio.hpp         # GPIO LED blink test
-│       ├── test_uart1.hpp        # UART echo test (char array)
-│       ├── test_uart2.hpp        # UART integer reception test
-│       ├── test_uart3.hpp        # UART array of uint32_t reception
-│       └── test_uart4.hpp        # UART interrupt-driven reception
+├── Inc/
+│   ├── gpio.hpp                  # GPIO driver
+│   ├── uart.hpp                  # UART driver
+│   ├── stm32f767.hpp             # MCU peripheral definitions
+├── Tests/
+│   ├── test_gpio.hpp             # GPIO LED blink test
+│   ├── test_uart1.hpp            # UART echo test (char array)
+│   ├── test_uart2.hpp            # UART integer reception test
+│   ├── test_uart3.hpp            # UART array of uint32_t reception
+│   └── test_uart4.hpp            # UART interrupt-driven reception
 ├── Docs/
 │   └── Cpp_Concepts_Guide.md     # Guide: linker scripts, startup, IRQ handlers
 └── STM32F767ZITX_CUSTOM.ld       # Custom linker script

@@ -1,6 +1,6 @@
 // tests/test_uart4.hpp
 #pragma once
-#include "../uart.hpp"
+#include "../Inc/uart.hpp"
 
 using uart_test = uart<uart_inst::uart_3, uart_baud::baud_96k, true>;
 

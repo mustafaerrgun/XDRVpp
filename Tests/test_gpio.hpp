@@ -1,6 +1,6 @@
 // tests/test_gpio.hpp
 #pragma once
-#include "../gpio.hpp"
+#include "../Inc/gpio.hpp"
 
 using led = gpio<gpio_port::port_b, gpio_pin::pin_7>;
 
