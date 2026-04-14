@@ -8,8 +8,8 @@ This project implements two low-level peripheral drivers from scratch:
 
 | Driver | File | Description |
 |--------|------|-------------|
-| GPIO | [Src/gpio.hpp](Src/gpio.hpp) | Template-based GPIO configuration and control |
-| UART | [Src/uart.hpp](Src/uart.hpp) | Template-based UART TX/RX with polling and interrupt modes |
+| GPIO | [Inc/gpio.hpp](Src/gpio.hpp) | Template-based GPIO configuration and control |
+| UART | [Inc/uart.hpp](Src/uart.hpp) | Template-based UART TX/RX with polling and interrupt modes |
 
 Key design goals:
 - **Zero runtime overhead** — all configuration resolved at compile time via templates
@@ -58,7 +58,7 @@ XDRpp/
 
 There is no dynamic dispatch, no virtual functions, and no heap allocation in driver code. Register addresses and bit masks are computed by the compiler as `constexpr` values.
 
-The register abstraction template ([Src/stm32f767.hpp](Src/stm32f767.hpp)) provides atomic read/write/OR/AND/toggle operations:
+The register abstraction template ([Inc/stm32f767.hpp](Inc/stm32f767.hpp)) provides atomic read/write/OR/AND/toggle operations:
 
 ```cpp
 template<const uint32_t addr, const uint32_t val = 0xFFFFFFFF>
@@ -75,7 +75,7 @@ struct reg_access {
 
 ## 5. GPIO Driver
 
-**File:** [Src/gpio.hpp](Src/gpio.hpp)
+**File:** [Inc/gpio.hpp](Inc/gpio.hpp)
 
 ### Template Parameters
 
@@ -113,7 +113,7 @@ led::set_pin_low();
 
 ## 6. UART Driver
 
-**File:** [Src/uart.hpp](Src/uart.hpp)
+**File:** [Inc/uart.hpp](Inc/uart.hpp)
 
 ### Template Parameters
 
@@ -223,15 +223,15 @@ Sections: `.isr_vector` → `.text` → `.data` (loaded from Flash, copied to RA
 
 ## 8. Test Files
 
-Located in [Src/tests/](Src/tests/), each file defines a `run_test()` function included by [Src/main.cpp](Src/main.cpp):
+Located in [Tests/](Tests/), each file defines a `run_test()` function included by [Src/main.cpp](Src/main.cpp):
 
 | File | What it tests |
 |------|--------------|
-| [test_gpio.hpp](Src/tests/test_gpio.hpp) | PB7 LED blink with 3-second on/off cycle |
-| [test_uart1.hpp](Src/tests/test_uart1.hpp) | Receive a char array and echo it back |
-| [test_uart2.hpp](Src/tests/test_uart2.hpp) | Receive an ASCII integer, convert to `uint32_t`, send back |
-| [test_uart3.hpp](Src/tests/test_uart3.hpp) | Receive 10 `uint32_t` values sequentially |
-| [test_uart4.hpp](Src/tests/test_uart4.hpp) | Interrupt-driven reception, verify received value equals 10 |
+| [test_gpio.hpp](Tests/test_gpio.hpp) | PB7 LED blink with 3-second on/off cycle |
+| [test_uart1.hpp](Tests/test_uart1.hpp) | Receive a char array and echo it back |
+| [test_uart2.hpp](Tests/test_uart2.hpp) | Receive an ASCII integer, convert to `uint32_t`, send back |
+| [test_uart3.hpp](Tests/test_uart3.hpp) | Receive 10 `uint32_t` values sequentially |
+| [test_uart4.hpp](Tests/test_uart4.hpp) | Interrupt-driven reception, verify received value equals 10 |
 
 ## 9. Building
 
